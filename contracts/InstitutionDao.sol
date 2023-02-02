@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.7.0 <0.9.0;
 import "./IAMDataDao.sol";
-import "./DaoManager.sol";
+import "./interface/IDaoManagerCID.sol";
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/Counters.sol";
 
 contract Institution is IAMDataDAO {
     using Counters for Counters.Counter;
     string public name;
-    DaoManager managingDAO;
+    IDaoManagerCID managingDAO;
 
     struct DealIdentifer {
         string title;
@@ -29,7 +29,7 @@ contract Institution is IAMDataDAO {
     constructor(
         string memory _name,
         address[] memory owners,
-        DaoManager _managingDao
+        IDaoManagerCID _managingDao
     ) {
         name = _name;
         managingDAO = _managingDao;

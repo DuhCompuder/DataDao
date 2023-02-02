@@ -1,15 +1,16 @@
 // SPDX-License-Identifier: UNLICENSED
 
 pragma solidity 0.8.17;
-import { MarketAPI } from "../filecoin-solidity/contracts/v0.8/MarketAPI.sol";
-import { CommonTypes } from "../filecoin-solidity/contracts/v0.8/types/CommonTypes.sol";
-import { MarketTypes } from "../filecoin-solidity/contracts/v0.8/types/MarketTypes.sol";
+import {MarketAPI} from "../filecoin-solidity/contracts/v0.8/MarketAPI.sol";
+import {CommonTypes} from "../filecoin-solidity/contracts/v0.8/types/CommonTypes.sol";
+import {MarketTypes} from "../filecoin-solidity/contracts/v0.8/types/MarketTypes.sol";
 // import { Actor, HyperActor } from "../filecoin-solidity/contracts/v0.8/utils/Actor.sol";
-import { Misc } from "../../filecoin-solidity/contracts/v0.8/utils/Misc.sol";
+import {Misc} from "../../filecoin-solidity/contracts/v0.8/utils/Misc.sol";
 import "./IAMDataDao.sol";
 import "./InstitutionDao.sol";
+import "./interface/IDaoManagerCID.sol";
 
-contract DaoManager {
+contract DaoManager is IDaoManagerCID {
     struct InstitutionInfo {
         string name;
         uint256 timeCreated;
@@ -39,16 +40,11 @@ contract DaoManager {
         address addressOfInstitution
     );
 
-    function createNewInstitutionDAO(string memory name, address[] memory initialOwners)
-        public
-        returns (address)
-    {
-
-        Institution institution = new Institution(
-            name,
-            initialOwners,
-            this
-        );
+    function createNewInstitutionDAO(
+        string memory name,
+        address[] memory initialOwners
+    ) public returns (address) {
+        Institution institution = new Institution(name, initialOwners, this);
         address addressCreated = address(institution);
         allInstitutions.push(addressCreated);
         createdInstitutions[addressCreated].name = name;
@@ -71,6 +67,7 @@ contract DaoManager {
     {
         cidSet[cidraw] = true;
         cidSizes[cidraw] = size;
+        emit addedNewCID(cidraw, size);
     }
 
     function policyOK(bytes memory cidraw, uint64 provider)

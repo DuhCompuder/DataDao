@@ -3,7 +3,7 @@
 pragma solidity >=0.7.0 <0.9.0;
 
 // Library Definition
-contract IAMLib {
+contract IAMDataDAO {
     enum ROLES {
         OWNERS,
         ADMINS,
@@ -11,7 +11,7 @@ contract IAMLib {
         REVIEWERS
     }
 
-    mapping(address => ROLES) roleOfAccount;
+    mapping(address => ROLES) public roleOfAccount;
 
     modifier reqOwners(ROLES access) {
         require(access == ROLES.OWNERS, "Access Denied: Owners only");
@@ -46,4 +46,15 @@ contract IAMLib {
         );
         _;
     }
+
+    function grantAccress() public reqAdmin(roleOfAccount[msg.sender]) {}
+
+    function changeRole(address user)
+        public
+        reqAdmin(roleOfAccount[msg.sender])
+    {}
+
+    function approveRegistrant() public reqAdmin(roleOfAccount[msg.sender]) {}
+
+    function approveReviewer() public reqAdmin(roleOfAccount[msg.sender]) {}
 }

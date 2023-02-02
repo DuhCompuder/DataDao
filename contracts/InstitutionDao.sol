@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.7.0 <0.9.0;
-import "./daoIAM.sol";
+import "./IAMDataDao.sol";
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/Counters.sol";
 
-contract Institution is IamDAO {
+contract InstitutionDAO is IAMDataDAO {
     using Counters for Counters.Counter;
     string public name;
+
     struct Document{
         string title;
         bytes cid;
@@ -21,17 +22,20 @@ contract Institution is IamDAO {
     Counters.Counter public documentCount;
     Counters.Counter public docsForApprovalCount;
 
-    constructor(string memory _name) {
+    constructor(string memory _name, address[] memory owners) {
         name = _name;
+        for (uint i = 0; i < owners.length; i++) {
+            roleOfAccount[owners[i]] = ROLES.OWNERS;
+        }
     }
 
     mapping (address => string) institutionName; 
 
-    function updateName(string memory newName) public IAMLib.reqOwners(roleOfAccount[msg.sender]) {
+    function updateName(string memory newName) public reqOwners(roleOfAccount[msg.sender]) {
         name = newName;
     }
 
-    function registerNewDocument(string calldata title, bytes calldata cid) public IAMLib.reqRegistrants(roleOfAccount[msg.sender]) {
+    function registerNewDocument(string calldata title, bytes calldata cid) public reqRegistrants(roleOfAccount[msg.sender]) {
         Document memory newDoc;
         newDoc.title = title;
         newDoc.cid = cid;
@@ -45,11 +49,11 @@ contract Institution is IamDAO {
 
     }
 
-    function approveRegistrant() public IAMLib.reqAdmin(roleOfAccount[msg.sender]) {
+    function approveRegistrant() public reqAdmin(roleOfAccount[msg.sender]) {
 
     }
 
-    function approveReviewer() public IAMLib.reqAdmin(roleOfAccount[msg.sender]) {
+    function approveReviewer() public reqAdmin(roleOfAccount[msg.sender]) {
         
     }
 }

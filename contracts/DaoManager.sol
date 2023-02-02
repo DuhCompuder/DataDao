@@ -1,9 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 
 pragma solidity 0.8.13;
-import {MarketAPI} from "@zondax/filecoin-solidity/contracts/v0.8/MarketAPI.sol";
-import {CommonTypes} from "@zondax/filecoin-solidity/contracts/v0.8/types/CommonTypes.sol";
-import {MarketTypes} from "@zondax/filecoin-solidity/contracts/v0.8/types/MarketAPI.sol";
 import "./IAMDataDao.sol";
 import "./InstitutionDao.sol";
 
@@ -11,13 +8,24 @@ contract DaoManager {
     struct InstitutionInfo {
         string name;
         uint256 timeCreated;
+        bool usesManager;
         address[] members; //may not need
     }
+
     mapping(bytes => bool) public cidSet;
     mapping(bytes => uint256) public cidSizes;
     mapping(bytes => mapping(uint64 => bool)) public cidProviders;
+
     mapping(address => InstitutionInfo) public createdInstitutions;
     address[] public allInstitutions;
+
+    modifier isManagedInstitution() {
+        require(
+            createdInstitutions[msg.sender].usesManager == true,
+            "This institution or organization is not created or registered on the DAO"
+        );
+        _;
+    }
 
     event CreatedNewInstitution(
         address creator,
@@ -30,10 +38,18 @@ contract DaoManager {
         public
         returns (address institution)
     {
-        InstitutionDAO institution = new InstitutionDAO(name, initialOwners);
+        InstitutionDAO institution = new InstitutionDAO(
+            name,
+            initialOwners,
+            address(this)
+        );
         address memory addressCreated = address(institution);
         allInstitutions.push(addressCreatedAt);
-        createdInstitutions(addressCreatedAt);
+        createdInstitutions[addressCreatedAt].name = name;
+        createdInstitutions[addressCreatedAt].timeCreated = block.timestamp;
+        createdInstitutions[addressCreatedAt].usesManager = true;
+        createdInstitutions[addressCreatedAt].members = initialOwners;
+
         emit CreatedNewInstitution(
             msg.sender,
             block.timestamp,
@@ -43,10 +59,10 @@ contract DaoManager {
         return addressCreatedAt;
     }
 
-    function fund(uint64 unused) public payable {}
-
-    function addCID(bytes calldata cidraw, uint256 size) public {
-        require(msg.sender == owner);
+    function addCID(bytes calldata cidraw, uint256 size)
+        public
+        isManagedInstitution
+    {
         cidSet[cidraw] = true;
         cidSizes[cidraw] = size;
     }
@@ -60,11 +76,12 @@ contract DaoManager {
         return !alreadyStoring;
     }
 
+    // Bounty Hunters
     function authorizeData(
         bytes memory cidraw,
         uint64 provider,
         uint256 size
-    ) public {
+    ) internal {
         require(cidSet[cidraw], "cid must be added before authorizing");
         require(cidSizes[cidraw] == size, "data size must match expected");
         require(

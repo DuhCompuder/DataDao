@@ -1,13 +1,10 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.7.0 <0.9.0;
-import "./DataDaoIAM.sol";
+import "./IAMDataDao.sol";
 import "./DaoManager.sol";
-import {MarketAPI} from "@zondax/filecoin-solidity/contracts/v0.8/MarketAPI.sol";
-import {CommonTypes} from "@zondax/filecoin-solidity/contracts/v0.8/types/CommonTypes.sol";
-import {MarketTypes} from "@zondax/filecoin-solidity/contracts/v0.8/types/MarketAPI.sol";
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/Counters.sol";
 
-contract InstitutionDAO is DataDAOIAM {
+contract Institution is IAMDataDAO {
     using Counters for Counters.Counter;
     string public name;
     DaoManager managingDAO;
@@ -31,13 +28,13 @@ contract InstitutionDAO is DataDAOIAM {
 
     constructor(
         string memory _name,
-        address[] owners,
+        address[] memory owners,
         DaoManager _managingDao
     ) {
         name = _name;
-        managingDAO = _managingDAO;
-        for (int256 i = 0; i < owners.length; i++) {
-            roleOfAccount[i] = ROLES.OWNERS;
+        managingDAO = _managingDao;
+        for (uint256 i = 0; i < owners.length; i++) {
+            roleOfAccount[owners[i]] = ROLES.OWNERS;
         }
     }
 
@@ -70,13 +67,13 @@ contract InstitutionDAO is DataDAOIAM {
         reqAdmin(roleOfAccount[msg.sender])
     {
         require(
-            docsForApproval[index].votes > 0,
+            docsForApproval[index].voteCount > 0,
             "Does not meet minimum vote count for approval"
         );
         docsForApproval[index].approved = true;
         managingDAO.addCID(
             docsForApproval[index].cid,
-            docsForApproval[index].size
+            docsForApproval[index].cidSize
         );
     }
 

@@ -2,7 +2,6 @@
 
 pragma solidity 0.8.17;
 import {MarketAPI} from "../filecoin-solidity/contracts/v0.8/MarketAPI.sol";
-import {CommonTypes} from "../filecoin-solidity/contracts/v0.8/types/CommonTypes.sol";
 import {MarketTypes} from "../filecoin-solidity/contracts/v0.8/types/MarketTypes.sol";
 import {Actor} from "../filecoin-solidity/contracts/v0.8/utils/Actor.sol";
 import {Misc} from "../filecoin-solidity/contracts/v0.8/utils/Misc.sol";

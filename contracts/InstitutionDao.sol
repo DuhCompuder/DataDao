@@ -90,4 +90,39 @@ contract Institution is IAMDataDAO {
         docsForApproval[docsForApprovalCount.current()] = newDoc;
         docsForApprovalCount.increment();
     }
+
+    // function getDealTerm(uint64 dealID) internal returns (MarketTypes.GetDealTermReturn memory) {
+    //     bytes memory raw_request = dealID.serializeDealID();
+
+    //     bytes memory raw_response = Actor.call(
+    //         MarketTypes.GetDealTermMethodNum,
+    //         MarketTypes.ActorID,
+    //         raw_request,
+    //         Misc.CBOR_CODEC,
+    //         msg.value,
+    //         true
+    //     );
+
+    //     bytes memory result = Actor.readRespData(raw_response);
+
+    //     return result.deserializeGetDealTermReturn();
+    // }
+
+    // /// @return the per-epoch price of a deal proposal.
+    // function getDealTotalPrice(uint64 dealID) internal returns (MarketTypes.GetDealEpochPriceReturn memory) {
+    //     bytes memory raw_request = dealID.serializeDealID();
+
+    //     bytes memory raw_response = Actor.call(
+    //         MarketTypes.GetDealEpochPriceMethodNum,
+    //         MarketTypes.ActorID,
+    //         raw_request,
+    //         Misc.CBOR_CODEC,
+    //         msg.value,
+    //         true
+    //     );
+
+    //     bytes memory result = Actor.readRespData(raw_response);
+
+    //     return result.deserializeGetDealEpochPriceReturn();
+    // }
 }

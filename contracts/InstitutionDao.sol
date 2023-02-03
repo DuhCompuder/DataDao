@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity >=0.7.0 <0.9.0;
+pragma solidity 0.8.17;
 import "./IAMDataDao.sol";
 import "./interface/IDaoManagerCID.sol";
-import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
 
 contract Institution is IAMDataDAO {
     using Counters for Counters.Counter;

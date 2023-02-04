@@ -46,14 +46,49 @@ contract IAMDataDAO {
         _;
     }
 
-    function grantAccress() public reqAdmin(roleOfAccount[msg.sender]) {}
+    function grantAccess(address user, ROLES role)
+        public
+        reqOwners(roleOfAccount[msg.sender])
+    {
+        require(role != ROLES.OWNERS, "Cannot directly grant owner role");
+        roleOfAccount[user] = role;
+    }
 
-    function changeRole(address user)
+    function RevokeRole(address user)
         public
         reqAdmin(roleOfAccount[msg.sender])
-    {}
+    {
+        require(
+            mapRoleToNum(roleOfAccount[mag.sender]) >
+                mapRoleToNum(roleOfAccount[user]),
+            "Cannot remove role of equal or greater level"
+        );
+        delete roleOfAccount[user];
+    }
 
-    function approveRegistrant() public reqAdmin(roleOfAccount[msg.sender]) {}
+    function allowRegistrant(address user)
+        public
+        reqAdmin(roleOfAccount[msg.sender])
+    {
+        roleOfAccount[user] = ROLES.REGISTRANTS;
+    }
 
-    function approveReviewer() public reqAdmin(roleOfAccount[msg.sender]) {}
+    function allowReviewer(address user)
+        public
+        reqRegistrants(roleOfAccount[msg.sender])
+    {
+        roleOfAccount[user] = ROLES.REVIEWERS;
+    }
+
+    function mapRoleToNum(ROLES role) private pure returns (uint256) {
+        if (role == ROLES.OWNERS) {
+            return 3;
+        } else if (role == ROLES.ADMINS) {
+            return 2;
+        } else if (role == ROLES.REGISTRANTS) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
 }

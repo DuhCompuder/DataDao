@@ -8,7 +8,7 @@ export async function writeDeploymentInfo(
   try {
     fs.writeFile(
       `./src/deployment/OperatingDeploymentInfo.json`,
-      JSON.stringify(deploymentFormat),
+      JSON.stringify(deploymentFormat, null, 2),
       (err) => {
         err
           ? console.error(err)

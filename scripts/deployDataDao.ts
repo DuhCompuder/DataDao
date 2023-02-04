@@ -42,9 +42,9 @@ async function main() {
     //Check if file exist. create one if not, otherwise copy from file and modify it.
     const existingFile:
       | FormatedDeploymentInfo
-      | undefined = require("../../src/deployment/OperatingDeploymentInfo.json");
+      | undefined = require("../src/deployment/OperatingDeploymentInfo.json");
     if (existingFile) {
-      existingFile.gameToken[network] = deploymentInfo;
+      existingFile.DataDaoManager[network] = deploymentInfo;
       await writeDeploymentInfo(existingFile);
     }
   } catch (e) {

@@ -2,13 +2,14 @@
 pragma solidity 0.8.17;
 import "./IAMDataDao.sol";
 import "./interface/IDaoManagerCID.sol";
+import "./interface/IClaimReward.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import {MarketAPI} from "../filecoin-solidity/contracts/v0.8/MarketAPI.sol";
 import {MarketTypes} from "../filecoin-solidity/contracts/v0.8/types/MarketTypes.sol";
 import {Actor} from "../filecoin-solidity/contracts/v0.8/utils/Actor.sol";
 import {Misc} from "../filecoin-solidity/contracts/v0.8/utils/Misc.sol";
 
-contract Institution is IAMDataDAO {
+contract Institution is IAMDataDAO, IClaimReward {
     address constant CALL_ACTOR_ID = 0xfe00000000000000000000000000000000000005;
     uint64 constant METHOD_SEND = 0;
     using Counters for Counters.Counter;

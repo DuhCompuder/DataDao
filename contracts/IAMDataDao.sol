@@ -59,7 +59,7 @@ contract IAMDataDAO {
         reqAdmin(roleOfAccount[msg.sender])
     {
         require(
-            mapRoleToNum(roleOfAccount[mag.sender]) >
+            mapRoleToNum(roleOfAccount[msg.sender]) >
                 mapRoleToNum(roleOfAccount[user]),
             "Cannot remove role of equal or greater level"
         );

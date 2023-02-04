@@ -4,6 +4,7 @@ pragma solidity 0.8.17;
 import "./IAMDataDao.sol";
 import "./InstitutionDao.sol";
 import "./interface/IDaoManagerCID.sol";
+import "./interface/IClaimReward.sol";
 
 contract DaoManager is IDaoManagerCID {
     struct CidInfo {
@@ -73,8 +74,7 @@ contract DaoManager is IDaoManagerCID {
         bytes memory cidraw,
         uint64 provider,
         uint256 size
-    ) public
-    isManagedInstitution {
+    ) public isManagedInstitution {
         require(cidInfo[cidraw].cidSet, "cid must be added before authorizing");
         require(
             cidInfo[cidraw].cidSizes == size,
@@ -86,5 +86,14 @@ contract DaoManager is IDaoManagerCID {
         );
 
         cidProviders[cidraw][provider] = true;
+    }
+
+    function claimBounty(uint64 deal_id) public {
+        MarketTypes.GetDealDataCommitmentReturn memory commitmentRet = MarketAPI
+            .getDealDataCommitment(deal_id);
+        IClaimReward institution = IClaimReward(
+            cidInfo[commitmentRet.data].fromInstitution
+        );
+        institution.claim_bounty(deal_id);
     }
 }

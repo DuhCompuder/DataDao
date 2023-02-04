@@ -11,7 +11,9 @@
     "local-chain": "npx hardhat node",
     "_deploy-dao": "npx hardhat run scripts/deployDataDao.ts",
     "deploy-dao:dev": "yarn _deploy-dao --network localhost",
-    "deploy-dao:hyperspace": "yarn _deploy-dao --network hyperspace"
+    "deploy-dao:hyperspace": "yarn _deploy-dao --network hyperspace",
+    "deploy-dao:wallaby": "yarn _deploy-dao --network wallaby",
+    "deploy-dao:bsc-test": "yarn _deploy-dao --network bsc_testnet"
   },
   "devDependencies": {
     "@ethersproject/abi": "^5.4.7",
@@ -30,6 +32,7 @@
     "@zondax/filecoin-solidity": "^0.4.0-beta.1",
     "chai": "^4.2.0",
     "cli-color": "^2.0.3",
+    "dotenv": "^16.0.3",
     "ethers": "^5.4.7",
     "hardhat": "^2.12.6",
     "hardhat-gas-reporter": "^1.0.8",

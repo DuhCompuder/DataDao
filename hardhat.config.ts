@@ -1,17 +1,33 @@
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
+import "dotenv/config";
+
+function getPK() {
+  return process.env.PRIVATE_KEY as string;
+}
 
 const config: HardhatUserConfig = {
   networks: {
     wallaby: {
       url: "https://wallaby.node.glif.io/rpc/v0",
       chainId: 31415,
-      accounts: [],
+      accounts: [getPK()],
     },
     hyperspace: {
-      url: "https://api.hyperspace.node.glif.io/rpc/v0",
       chainId: 3141,
-      accounts: [],
+      url: "https://api.hyperspace.node.glif.io/rpc/v1",
+      accounts: [getPK()],
+      gasPrice: 50000000000,
+    },
+    // hyperspace: {
+    //   url: "https://api.hyperspace.node.glif.io/rpc/v1",
+    //   chainId: 3141,
+    //   accounts: [getPK()],
+    // },
+    bsc_testnet: {
+      url: "https://data-seed-prebsc-1-s1.binance.org:8545/",
+      chainId: 97,
+      accounts: [getPK()],
     },
   },
   solidity: {

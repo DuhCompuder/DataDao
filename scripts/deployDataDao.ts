@@ -1,4 +1,4 @@
-import { ethers } from "hardhat";
+import hre, { ethers } from "hardhat";
 import {
   SavedDeploymentInfo,
   FormatedDeploymentInfo,
@@ -9,10 +9,14 @@ import { writeDeploymentInfo } from "./writeToDeploymentFile";
 import clc from "cli-color";
 
 async function main() {
+  const feeData = await hre.ethers.provider.getFeeData();
   const DaoManager: DaoManager__factory = await ethers.getContractFactory(
     "DaoManager"
   );
-  const daoManager: DaoManager = await DaoManager.deploy();
+  const daoManager: DaoManager = await DaoManager.deploy({
+    maxPriorityFeePerGas: feeData.maxPriorityFeePerGas!,
+    maxFeePerGas: feeData.maxFeePerGas!,
+  });
   await daoManager.deployed();
   console.log("DataDaoManager to address: ", daoManager.address);
 

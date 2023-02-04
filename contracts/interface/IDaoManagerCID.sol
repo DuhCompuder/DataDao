@@ -6,4 +6,10 @@ interface IDaoManagerCID {
     event addedNewCID(bytes cidraw, uint256 size);
 
     function addCID(bytes calldata cidraw, uint256 size) external;
+
+    function authorizeData(
+        bytes memory cidraw,
+        uint64 provider,
+        uint256 size
+    ) external;
 }

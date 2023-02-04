@@ -1,17 +1,11 @@
 // SPDX-License-Identifier: UNLICENSED
 
 pragma solidity 0.8.17;
-import {MarketAPI} from "../filecoin-solidity/contracts/v0.8/MarketAPI.sol";
-import {MarketTypes} from "../filecoin-solidity/contracts/v0.8/types/MarketTypes.sol";
-import {Actor} from "../filecoin-solidity/contracts/v0.8/utils/Actor.sol";
-import {Misc} from "../filecoin-solidity/contracts/v0.8/utils/Misc.sol";
 import "./IAMDataDao.sol";
 import "./InstitutionDao.sol";
 import "./interface/IDaoManagerCID.sol";
 
 contract DaoManager is IDaoManagerCID {
-    address constant CALL_ACTOR_ID = 0xfe00000000000000000000000000000000000005;
-    uint64 constant METHOD_SEND = 0;
     struct CidInfo {
         bool cidSet;
         uint256 cidSizes;
@@ -79,7 +73,8 @@ contract DaoManager is IDaoManagerCID {
         bytes memory cidraw,
         uint64 provider,
         uint256 size
-    ) internal {
+    ) public
+    isManagedInstitution {
         require(cidInfo[cidraw].cidSet, "cid must be added before authorizing");
         require(
             cidInfo[cidraw].cidSizes == size,
@@ -91,66 +86,5 @@ contract DaoManager is IDaoManagerCID {
         );
 
         cidProviders[cidraw][provider] = true;
-    }
-
-    function claim_bounty(uint64 deal_id) public {
-        MarketTypes.GetDealDataCommitmentReturn memory commitmentRet = MarketAPI
-            .getDealDataCommitment(deal_id);
-        MarketTypes.GetDealProviderReturn memory providerRet = MarketAPI
-            .getDealProvider(deal_id);
-
-        authorizeData(
-            commitmentRet.data,
-            providerRet.provider,
-            commitmentRet.size
-        );
-
-        // get dealer (bounty hunter client)
-        MarketTypes.GetDealClientReturn memory clientRet = MarketAPI
-            .getDealClient(deal_id);
-
-        // send reward to client
-        send(clientRet.client);
-    }
-
-    function call_actor_id(
-        uint64 method,
-        uint256 value,
-        uint64 flags,
-        uint64 codec,
-        bytes memory params,
-        uint64 id
-    )
-        public
-        returns (
-            bool,
-            int256,
-            uint64,
-            bytes memory
-        )
-    {
-        (bool success, bytes memory data) = address(CALL_ACTOR_ID).delegatecall(
-            abi.encode(method, value, flags, codec, params, id)
-        );
-        (int256 exit, uint64 return_codec, bytes memory return_value) = abi
-            .decode(data, (int256, uint64, bytes));
-        return (success, exit, return_codec, return_value);
-    }
-
-    // send 1 FIL to the filecoin actor at actor_id
-
-    function send(uint64 actorID) internal {
-        bytes memory emptyParams = "";
-        delete emptyParams;
-
-        uint256 oneFIL = 1000000000000000000;
-        Actor.callByID(
-            actorID,
-            METHOD_SEND,
-            Misc.NONE_CODEC,
-            emptyParams,
-            oneFIL,
-            true
-        );
     }
 }

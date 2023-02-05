@@ -12,8 +12,12 @@ contract DaoManager is IDaoManagerCID {
         uint256 cidSizes;
         address fromInstitution;
     }
+    struct ProviderInfo {
+        bool isProvider;
+        uint64 lastClaimed;
+    }
     mapping(bytes => CidInfo) public cidInfo;
-    mapping(bytes => mapping(uint64 => bool)) public cidProviders;
+    mapping(bytes => mapping(uint64 => ProviderInfo)) public cidProviders;
 
     mapping(address => bool) public createdInstitutions;
     address[] public allInstitutions;
@@ -65,7 +69,7 @@ contract DaoManager is IDaoManagerCID {
         view
         returns (bool)
     {
-        bool alreadyStoring = cidProviders[cidraw][provider];
+        bool alreadyStoring = cidProviders[cidraw][provider].isProvider;
         return !alreadyStoring;
     }
 
@@ -73,7 +77,8 @@ contract DaoManager is IDaoManagerCID {
     function authorizeData(
         bytes memory cidraw,
         uint64 provider,
-        uint256 size
+        uint256 size,
+        uint64 startTime
     ) public isManagedInstitution {
         require(cidInfo[cidraw].cidSet, "cid must be added before authorizing");
         require(
@@ -85,7 +90,8 @@ contract DaoManager is IDaoManagerCID {
             "deal failed policy check: has provider already claimed this cid?"
         );
 
-        cidProviders[cidraw][provider] = true;
+        cidProviders[cidraw][provider].isProvider = true;
+        cidProviders[cidraw][provider].lastClaimed = startTime;
     }
 
     function claimBounty(uint64 deal_id) public {
@@ -95,5 +101,14 @@ contract DaoManager is IDaoManagerCID {
             cidInfo[commitmentRet.data].fromInstitution
         );
         institution.claim_bounty(deal_id);
+    }
+
+    function claimRewardFromBounty(uint64 deal_id) public {
+        MarketTypes.GetDealDataCommitmentReturn memory commitmentRet = MarketAPI
+            .getDealDataCommitment(deal_id);
+        IClaimReward institution = IClaimReward(
+            cidInfo[commitmentRet.data].fromInstitution
+        );
+        institution.claim_reward(deal_id);
     }
 }

@@ -105,18 +105,59 @@ contract Institution is IAMDataDAO, IClaimReward {
         MarketTypes.GetDealProviderReturn memory providerRet = MarketAPI
             .getDealProvider(deal_id);
 
+        (uint64 start, ) = getDealTerms(deal_id);
+
         managingDAO.authorizeData(
             commitmentRet.data,
             providerRet.provider,
-            commitmentRet.size
+            commitmentRet.size,
+            start
         );
+    }
+
+    function award_bounty(uint64 deal_id) public {
+        MarketTypes.GetDealDataCommitmentReturn memory commitmentRet = MarketAPI
+            .getDealDataCommitment(deal_id);
+        MarketTypes.GetDealProviderReturn memory providerRet = MarketAPI
+            .getDealProvider(deal_id);
+        require(
+            cidProviders[commitmentRet.data][provider].isProvider == true,
+            "You do not have a claim on this deal bounty"
+        );
+        (, uint64 end) = getDealTerms(deal_id);
+
+        uint64 lastClaimed = managingDAO
+        .cidProviders[commitmentRet.data][provider].lastClaimed;
+
+        uint256 awardAmount;
+        if (block.timestamp > end) {
+            awardAmount = calculate_reward(lastClaimed, end);
+        } else {
+            awardAmount = calculate_reward(lastClaimed, block.timestamp);
+        }
+
+        managingDAO
+        .cidProviders[commitmentRet.data][provider].lastClaimed = block
+            .timestamp;
 
         // get dealer (bounty hunter client)
         MarketTypes.GetDealClientReturn memory clientRet = MarketAPI
             .getDealClient(deal_id);
 
         // send reward to client
-        send(clientRet.client);
+        send(clientRet.client, awardAmount);
+    }
+
+    function calculate_reward(uint64 start, uint64 current)
+        private
+        pure
+        returns (uint256)
+    {
+        //Do something to calculate duration and a multiple
+        uint64 duration = current - start;
+        //0.2 FIL to the
+        uint256 oneFIL = 200000000000000000;
+        return oneFIL;
     }
 
     function call_actor_id(
@@ -143,9 +184,9 @@ contract Institution is IAMDataDAO, IClaimReward {
         return (success, exit, return_codec, return_value);
     }
 
-    // send 0.2 FIL to the filecoin actor at actor_id
+    // send filecoin actor at actor_id
 
-    function send(uint64 actorID) internal {
+    function send(uint64 actorID, uint256 amount) private {
         bytes memory emptyParams = "";
         delete emptyParams;
 

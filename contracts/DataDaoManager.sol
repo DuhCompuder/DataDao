@@ -3,8 +3,8 @@
 pragma solidity 0.8.17;
 import "./IAMDataDao.sol";
 import "./InstitutionDao.sol";
-import "./interface/IDaoManagerCID.sol";
-import "./interface/IClaimReward.sol";
+import "./interfaces/IDaoManagerCID.sol";
+import "./interfaces/IClaimReward.sol";
 
 contract DaoManager is IDaoManagerCID {
     struct CidInfo {
@@ -14,7 +14,7 @@ contract DaoManager is IDaoManagerCID {
     }
     struct ProviderInfo {
         bool isProvider;
-        uint64 lastClaimed;
+        int64 lastClaimed;
     }
     mapping(bytes => CidInfo) public cidInfo;
     mapping(bytes => mapping(uint64 => ProviderInfo)) public cidProviders;
@@ -55,6 +55,18 @@ contract DaoManager is IDaoManagerCID {
         return addressCreated;
     }
 
+    function checkProvider(bytes calldata cidraw, uint64 provider)
+        public
+        view
+        override
+        returns (bool, int64)
+    {
+        return (
+            cidProviders[cidraw][provider].isProvider,
+            cidProviders[cidraw][provider].lastClaimed
+        );
+    }
+
     function addCID(bytes calldata cidraw, uint256 size)
         public
         isManagedInstitution
@@ -78,7 +90,7 @@ contract DaoManager is IDaoManagerCID {
         bytes memory cidraw,
         uint64 provider,
         uint256 size,
-        uint64 startTime
+        int64 startTime
     ) public isManagedInstitution {
         require(cidInfo[cidraw].cidSet, "cid must be added before authorizing");
         require(
@@ -109,6 +121,6 @@ contract DaoManager is IDaoManagerCID {
         IClaimReward institution = IClaimReward(
             cidInfo[commitmentRet.data].fromInstitution
         );
-        institution.claim_reward(deal_id);
+        institution.award_bounty(deal_id);
     }
 }

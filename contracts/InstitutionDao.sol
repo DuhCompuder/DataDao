@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.17;
 import "./IAMDataDao.sol";
-import "./interface/IDaoManagerCID.sol";
-import "./interface/IClaimReward.sol";
+import "./interfaces/IDaoManagerCID.sol";
+import "./interfaces/IClaimReward.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import {MarketAPI} from "../filecoin-solidity/contracts/v0.8/MarketAPI.sol";
 import {MarketTypes} from "../filecoin-solidity/contracts/v0.8/types/MarketTypes.sol";
@@ -105,7 +105,7 @@ contract Institution is IAMDataDAO, IClaimReward {
         MarketTypes.GetDealProviderReturn memory providerRet = MarketAPI
             .getDealProvider(deal_id);
 
-        (uint64 start, ) = getDealTerms(deal_id);
+        (int64 start, ) = getDealTerms(deal_id);
 
         managingDAO.authorizeData(
             commitmentRet.data,
@@ -120,25 +120,28 @@ contract Institution is IAMDataDAO, IClaimReward {
             .getDealDataCommitment(deal_id);
         MarketTypes.GetDealProviderReturn memory providerRet = MarketAPI
             .getDealProvider(deal_id);
+
+        (bool isProvider, int64 lastClaimed) = managingDAO.checkProvider(
+            commitmentRet.data,
+            providerRet.provider
+        );
         require(
-            cidProviders[commitmentRet.data][provider].isProvider == true,
+            isProvider == true,
             "You do not have a claim on this deal bounty"
         );
-        (, uint64 end) = getDealTerms(deal_id);
+        (int64 start, int64 end) = getDealTerms(deal_id);
 
-        uint64 lastClaimed = managingDAO
-        .cidProviders[commitmentRet.data][provider].lastClaimed;
+        //update this eventually
+        uint256 awardAmount = calculate_reward(start, end);
+        // if (block.timestamp > end) {
+        //     awardAmount = calculate_reward(lastClaimed, end);
+        // } else {
+        //     // awardAmount = calculate_reward(lastClaimed, int64(block.timestamp));
+        // }
 
-        uint256 awardAmount;
-        if (block.timestamp > end) {
-            awardAmount = calculate_reward(lastClaimed, end);
-        } else {
-            awardAmount = calculate_reward(lastClaimed, block.timestamp);
-        }
-
-        managingDAO
-        .cidProviders[commitmentRet.data][provider].lastClaimed = block
-            .timestamp;
+        // managingDAO
+        // .cidProviders[commitmentRet.data][providerRet.provider]
+        //     .lastClaimed = block.timestamp;
 
         // get dealer (bounty hunter client)
         MarketTypes.GetDealClientReturn memory clientRet = MarketAPI
@@ -148,13 +151,13 @@ contract Institution is IAMDataDAO, IClaimReward {
         send(clientRet.client, awardAmount);
     }
 
-    function calculate_reward(uint64 start, uint64 current)
+    function calculate_reward(int64 start, int64 current)
         private
         pure
         returns (uint256)
     {
         //Do something to calculate duration and a multiple
-        uint64 duration = current - start;
+        int64 duration = current - start;
         //0.2 FIL to the
         uint256 oneFIL = 200000000000000000;
         return oneFIL;

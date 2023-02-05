@@ -14,7 +14,8 @@
     "deploy-dao:dev": "yarn _deploy-dao --network localhost",
     "deploy-dao:hyperspace": "yarn _deploy-dao --network hyperspace",
     "deploy-dao:wallaby": "yarn _deploy-dao --network wallaby",
-    "deploy-dao:bsc-test": "yarn _deploy-dao --network bsc_testnet"
+    "deploy-dao:bsc-test": "yarn _deploy-dao --network bsc_testnet",
+    "submodule:update": "git submodule update --remote filecoin-solidity"
   },
   "devDependencies": {
     "@ethersproject/abi": "^5.4.7",

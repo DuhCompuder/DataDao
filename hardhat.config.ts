@@ -3,7 +3,10 @@ import "@nomicfoundation/hardhat-toolbox";
 import "dotenv/config";
 
 function getPK() {
-  return process.env.PRIVATE_KEY as string;
+  return (
+    (process.env.PRIVATE_KEY as string) ||
+    "96ab64cf18341198d2bd031d09bbe4e1787a05a0355184ac09ca23eabb28ebea"
+  ); //exposed default account for testing only
 }
 
 const config: HardhatUserConfig = {

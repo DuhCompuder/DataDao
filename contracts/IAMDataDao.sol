@@ -54,7 +54,7 @@ contract IAMDataDAO {
         roleOfAccount[user] = role;
     }
 
-    function RevokeRole(address user)
+    function revokeRole(address user)
         public
         reqAdmin(roleOfAccount[msg.sender])
     {

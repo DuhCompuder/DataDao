@@ -10,6 +10,7 @@
     "compile": "npx hardhat compile",
     "test": "npx hardhat test",
     "local-chain": "npx hardhat node",
+    "copyABIs": "npx hardhat run scripts/copyMissingAbis.ts",
     "_deploy-dao": "npx hardhat run scripts/deployDataDao.ts",
     "deploy-dao:dev": "yarn _deploy-dao --network localhost",
     "deploy-dao:hyperspace": "yarn _deploy-dao --network hyperspace",

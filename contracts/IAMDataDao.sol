@@ -5,7 +5,15 @@ import "./interfaces/IManageInstitutionOnDao.sol";
 // Library Definition
 abstract contract IAMDataDAO is IManageInstitutionOnDao {
     mapping(address => ROLES) public roleOfAccount;
+    address[] public memberOfDAO;
     address[] public memberApplicants;
+
+    modifier checkUser(address user) {
+        if (getRoleNum(roleOfAccount[user]) == 0) {
+            memberOfDAO.push(user);
+        }
+        _;
+    }
 
     modifier reqOwners(ROLES access) {
         require(access == ROLES.OWNERS, "Access Denied: Owners only");
@@ -43,26 +51,32 @@ abstract contract IAMDataDAO is IManageInstitutionOnDao {
 
     function grantAccess(address user, ROLES role)
         public
+        checkUser(user)
         reqOwners(roleOfAccount[msg.sender])
     {
         require(role != ROLES.OWNERS, "Cannot directly grant owner role");
         roleOfAccount[user] = role;
     }
 
-    function revokeRole(address user)
-        public
-        reqAdmin(roleOfAccount[msg.sender])
-    {
-        require(
-            getRoleNum(roleOfAccount[msg.sender]) >
-                getRoleNum(roleOfAccount[user]),
-            "Cannot remove role of equal or greater level"
-        );
-        delete roleOfAccount[user];
-    }
+    // function revokeRole(address user)
+    //     public
+    //     reqAdmin(roleOfAccount[msg.sender])
+    // {
+    //     require(
+    //         roleOfAccount[user] != ROLES.NOT_A_MEMBER,
+    //         "Cannot rovoke role from non-member"
+    //     );
+    //     require(
+    //         getRoleNum(roleOfAccount[msg.sender]) >
+    //             getRoleNum(roleOfAccount[user]),
+    //         "Cannot remove role of equal or greater level"
+    //     );
+    //     delete roleOfAccount[user];
+    // }
 
     function allowRegistrant(address user)
         public
+        checkUser(user)
         reqAdmin(roleOfAccount[msg.sender])
     {
         roleOfAccount[user] = ROLES.REGISTRANTS;
@@ -70,6 +84,7 @@ abstract contract IAMDataDAO is IManageInstitutionOnDao {
 
     function allowReviewer(address user)
         public
+        checkUser(user)
         reqRegistrants(roleOfAccount[msg.sender])
     {
         roleOfAccount[user] = ROLES.REVIEWERS;
@@ -79,20 +94,37 @@ abstract contract IAMDataDAO is IManageInstitutionOnDao {
         memberApplicants.push(msg.sender);
     }
 
-    function approveJoinInstitution()
-        public
-        reqRegistrants(roleOfAccount[msg.sender])
-    {
-        roleOfAccount[memberApplicants[memberApplicants.length]] = ROLES
-            .REVIEWERS;
+    function joinInstitution() public checkUser(msg.sender) {
+        memberApplicants.push(msg.sender);
     }
 
-    function denyJoinInstitution()
-        public
-        reqRegistrants(roleOfAccount[msg.sender])
-    {
-        delete memberApplicants[memberApplicants.length];
+    // function approveJoinInstitution()
+    //     public
+    //     checkUser(memberApplicants[memberApplicants.length])
+    //     reqRegistrants(roleOfAccount[msg.sender])
+    // {
+    //     roleOfAccount[memberApplicants[memberApplicants.length]] = ROLES
+    //         .REVIEWERS;
+    // }
+
+    // function denyJoinInstitution()
+    //     public
+    //     reqRegistrants(roleOfAccount[msg.sender])
+    // {
+    //     delete memberApplicants[memberApplicants.length];
+    // }
+
+    function getAllMemberCount() public view returns (uint256) {
+        return memberOfDAO.length;
     }
+
+    // function getAllMembersOfDAO() public view returns (address[] memory) {
+    //     address[] memory allMembers;
+    //     for (uint256 i = 0; i < memberOfDAO.length; i++) {
+    //         allMembers[i] = (memberOfDAO[i]);
+    //     }
+    //     return allMembers;
+    // }
 
     function getRoleNum(ROLES role) public pure returns (uint256) {
         if (role == ROLES.OWNERS) {

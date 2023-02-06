@@ -42,6 +42,7 @@ contract Institution is IAMDataDAO, IClaimReward {
         managingDAO = _managingDao;
         for (uint256 i = 0; i < owners.length; i++) {
             roleOfAccount[owners[i]] = ROLES.OWNERS;
+            memberOfDAO.push(owners[i]);
         }
     }
 

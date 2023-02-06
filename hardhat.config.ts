@@ -21,6 +21,9 @@ const config: HardhatUserConfig = {
       url: "https://api.hyperspace.node.glif.io/rpc/v1",
       accounts: [getPK()],
       gasPrice: 50000000000,
+      //1500000000
+      //3500000000
+      //50000000000
     },
     // hyperspace: {
     //   url: "https://api.hyperspace.node.glif.io/rpc/v1",
@@ -38,7 +41,7 @@ const config: HardhatUserConfig = {
     settings: {
       optimizer: {
         enabled: true,
-        runs: 200,
+        // runs: 200,
       },
     },
   },

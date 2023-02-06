@@ -1,16 +1,11 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.17;
+import "./interfaces/IManageInstitutionOnDao.sol";
 
 // Library Definition
-contract IAMDataDAO {
-    enum ROLES {
-        OWNERS,
-        ADMINS,
-        REGISTRANTS,
-        REVIEWERS
-    }
-
+abstract contract IAMDataDAO is IManageInstitutionOnDao {
     mapping(address => ROLES) public roleOfAccount;
+    address[] public memberApplicants;
 
     modifier reqOwners(ROLES access) {
         require(access == ROLES.OWNERS, "Access Denied: Owners only");
@@ -59,8 +54,8 @@ contract IAMDataDAO {
         reqAdmin(roleOfAccount[msg.sender])
     {
         require(
-            mapRoleToNum(roleOfAccount[msg.sender]) >
-                mapRoleToNum(roleOfAccount[user]),
+            getRoleNum(roleOfAccount[msg.sender]) >
+                getRoleNum(roleOfAccount[user]),
             "Cannot remove role of equal or greater level"
         );
         delete roleOfAccount[user];
@@ -80,12 +75,33 @@ contract IAMDataDAO {
         roleOfAccount[user] = ROLES.REVIEWERS;
     }
 
-    function mapRoleToNum(ROLES role) private pure returns (uint256) {
+    function applyToInstitution() public {
+        memberApplicants.push(msg.sender);
+    }
+
+    function approveJoinInstitution()
+        public
+        reqRegistrants(roleOfAccount[msg.sender])
+    {
+        roleOfAccount[memberApplicants[memberApplicants.length]] = ROLES
+            .REVIEWERS;
+    }
+
+    function denyJoinInstitution()
+        public
+        reqRegistrants(roleOfAccount[msg.sender])
+    {
+        delete memberApplicants[memberApplicants.length];
+    }
+
+    function getRoleNum(ROLES role) public pure returns (uint256) {
         if (role == ROLES.OWNERS) {
-            return 3;
+            return 4;
         } else if (role == ROLES.ADMINS) {
-            return 2;
+            return 3;
         } else if (role == ROLES.REGISTRANTS) {
+            return 2;
+        } else if (role == ROLES.REVIEWERS) {
             return 1;
         } else {
             return 0;

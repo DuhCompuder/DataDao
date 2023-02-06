@@ -5,6 +5,7 @@ import "./IAMDataDao.sol";
 import "./InstitutionDao.sol";
 import "./interfaces/IDaoManagerCID.sol";
 import "./interfaces/IClaimReward.sol";
+import "./interfaces/IManageInstitutionOnDao.sol";
 
 contract DaoManager is IDaoManagerCID {
     struct CidInfo {
@@ -16,6 +17,7 @@ contract DaoManager is IDaoManagerCID {
         bool isProvider;
         int64 lastClaimed;
     }
+    mapping(address => address[]) public registeredInstitutions;
     mapping(bytes => CidInfo) public cidInfo;
     mapping(bytes => mapping(uint64 => ProviderInfo)) public cidProviders;
 
@@ -36,6 +38,31 @@ contract DaoManager is IDaoManagerCID {
         string nameOfInstitution,
         address addressOfInstitution
     );
+
+    function getAllInstitutionCount() public view returns (uint256) {
+        return allInstitutions.length;
+    }
+
+    function getInstitutionRegisteredToCount(address user)
+        public
+        view
+        returns (uint256)
+    {
+        return registeredInstitutions[user].length;
+    }
+
+    function setInstitutionRegisteredTo(address user, address institution)
+        public
+        isManagedInstitution
+    {
+        require(
+            IManageInstitutionOnDao(institution).getRoleNum(
+                IManageInstitutionOnDao(institution).roleOfAccount(user)
+            ) > 0,
+            "Member already registered"
+        );
+        registeredInstitutions[user].push(user);
+    }
 
     function createNewInstitutionDAO(
         string memory name,

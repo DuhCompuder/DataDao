@@ -507,6 +507,25 @@
               "type": "address"
             }
           ],
+          "name": "getAllInstitutionRegisteredToUser",
+          "outputs": [
+            {
+              "internalType": "address[]",
+              "name": "",
+              "type": "address[]"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "user",
+              "type": "address"
+            }
+          ],
           "name": "getInstitutionRegisteredToCount",
           "outputs": [
             {
@@ -561,7 +580,7 @@
           "type": "function"
         }
       ],
-      "contractAddress": "0x934f74e433AF012f6F69091C5DF31EFe79Fade61"
+      "contractAddress": "0x2c97E3A8Ae5DD20712AEaE7B257b7019b6567689"
     },
     "31337": {
       "networkId": 31337,
@@ -858,6 +877,25 @@
               "type": "address"
             }
           ],
+          "name": "getAllInstitutionRegisteredToUser",
+          "outputs": [
+            {
+              "internalType": "address[]",
+              "name": "",
+              "type": "address[]"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "user",
+              "type": "address"
+            }
+          ],
           "name": "getInstitutionRegisteredToCount",
           "outputs": [
             {
@@ -939,6 +977,25 @@
         "type": "constructor"
       },
       {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "uint64",
+            "name": "deal_id",
+            "type": "uint64"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "claimee",
+            "type": "address"
+          }
+        ],
+        "name": "ClaimedBounty",
+        "type": "event"
+      },
+      {
         "inputs": [
           {
             "internalType": "address",
@@ -960,6 +1017,13 @@
           }
         ],
         "name": "allowReviewer",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "applyToInstitution",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -1190,6 +1254,19 @@
         "type": "function"
       },
       {
+        "inputs": [],
+        "name": "getAllMemberCount",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
         "inputs": [
           {
             "internalType": "uint64",
@@ -1254,12 +1331,31 @@
       {
         "inputs": [
           {
+            "internalType": "enum IManageInstitutionOnDao.ROLES",
+            "name": "role",
+            "type": "uint8"
+          }
+        ],
+        "name": "getRoleNum",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "pure",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
             "internalType": "address",
             "name": "user",
             "type": "address"
           },
           {
-            "internalType": "enum IAMDataDAO.ROLES",
+            "internalType": "enum IManageInstitutionOnDao.ROLES",
             "name": "role",
             "type": "uint8"
           }
@@ -1267,6 +1363,51 @@
         "name": "grantAccess",
         "outputs": [],
         "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "joinInstitution",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "name": "memberApplicants",
+        "outputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "name": "memberOfDAO",
+        "outputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
         "type": "function"
       },
       {
@@ -1304,19 +1445,6 @@
         "inputs": [
           {
             "internalType": "address",
-            "name": "user",
-            "type": "address"
-          }
-        ],
-        "name": "revokeRole",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
             "name": "",
             "type": "address"
           }
@@ -1324,7 +1452,7 @@
         "name": "roleOfAccount",
         "outputs": [
           {
-            "internalType": "enum IAMDataDAO.ROLES",
+            "internalType": "enum IManageInstitutionOnDao.ROLES",
             "name": "",
             "type": "uint8"
           }

@@ -51,17 +51,13 @@ contract DaoManager is IDaoManagerCID {
         return registeredInstitutions[user].length;
     }
 
-    // function getAllInstitutionRegisteredToUser(address user)
-    //     public
-    //     view
-    //     returns (address[] memory)
-    // {
-    //     address[] memory memberOf;
-    //     for (uint256 i = 0; i < registeredInstitutions[user].length; i++) {
-    //         memberOf[i] = registeredInstitutions[user][i];
-    //     }
-    //     return memberOf;
-    // }
+    function getAllInstitutionRegisteredToUser(address user)
+        public
+        view
+        returns (address[] memory)
+    {
+        return registeredInstitutions[user];
+    }
 
     function setInstitutionRegisteredTo(address user, address institution)
         public

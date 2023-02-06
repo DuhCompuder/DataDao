@@ -118,13 +118,9 @@ abstract contract IAMDataDAO is IManageInstitutionOnDao {
         return memberOfDAO.length;
     }
 
-    // function getAllMembersOfDAO() public view returns (address[] memory) {
-    //     address[] memory allMembers;
-    //     for (uint256 i = 0; i < memberOfDAO.length; i++) {
-    //         allMembers[i] = (memberOfDAO[i]);
-    //     }
-    //     return allMembers;
-    // }
+    function getAllMembersOfDAO() public view returns (address[] memory) {
+        return memberOfDAO;
+    }
 
     function getRoleNum(ROLES role) public pure returns (uint256) {
         if (role == ROLES.OWNERS) {

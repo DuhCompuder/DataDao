@@ -211,12 +211,12 @@ contract Institution is IAMDataDAO, IClaimReward {
         return (providerRet.start, providerRet.end);
     }
 
-    function getDealTotalPrice(uint64 deal_id)
-        public
-        returns (MarketTypes.GetDealEpochPriceReturn memory)
-    {
-        MarketTypes.GetDealEpochPriceReturn memory providerRet = MarketAPI
-            .getDealTotalPrice(deal_id);
-        return providerRet;
-    }
+    // function getDealTotalPrice(uint64 deal_id)
+    //     public
+    //     returns (MarketTypes.GetDealEpochPriceReturn memory)
+    // {
+    //     MarketTypes.GetDealEpochPriceReturn memory providerRet = MarketAPI
+    //         .getDealTotalPrice(deal_id);
+    //     return providerRet;
+    // }
 }

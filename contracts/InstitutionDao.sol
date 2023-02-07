@@ -17,6 +17,7 @@ contract Institution is IAMDataDAO, IClaimReward {
     IDaoManagerCID managingDAO;
 
     struct DealIdentifer {
+        uint64 dealID;
         string title;
         bytes cid;
         uint256 cidSize;
@@ -58,10 +59,11 @@ contract Institution is IAMDataDAO, IClaimReward {
     }
 
     // Admin Functions
-    function voteDealIdentifer(uint256 index)
+    function voteDealIdentifer(uint256 index, uint64 dealId)
         public
         reqAdmin(roleOfAccount[msg.sender])
     {
+        require(docsForApproval[index].dealID == dealId, "voting for the wrong deal document");
         require(
             voters[docsForApproval[index].cid][msg.sender] == false,
             "You cannot vote for the same document more than once"
@@ -94,6 +96,7 @@ contract Institution is IAMDataDAO, IClaimReward {
             .getDealDataCommitment(deal_id);
 
         DealIdentifer memory newDoc;
+        newDoc.dealID = deal_id;
         newDoc.title = title;
         newDoc.cid = commitmentRet.data;
         newDoc.cidSize = commitmentRet.size;

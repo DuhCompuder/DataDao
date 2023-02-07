@@ -1,6 +1,6 @@
 import { task } from "hardhat/config";
 import "@nomiclabs/hardhat-ethers";
-import { ethers, network } from "hardhat";
+// import { ethers, network } from "hardhat";
 import {
   SavedDeploymentInfo,
   FormatedDeploymentInfo,

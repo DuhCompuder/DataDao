@@ -86,13 +86,17 @@ contract Institution is IAMDataDAO, IClaimReward {
     }
 
     // Registrant Functions
-    function registerNewDealIdentifer(string calldata title, bytes calldata cid)
+    function registerNewDealIdentifer(string calldata title, uint64 deal_id)
         public
         reqRegistrants(roleOfAccount[msg.sender])
     {
+        MarketTypes.GetDealDataCommitmentReturn memory commitmentRet = MarketAPI
+            .getDealDataCommitment(deal_id);
+
         DealIdentifer memory newDoc;
         newDoc.title = title;
-        newDoc.cid = cid;
+        newDoc.cid = commitmentRet.data;
+        newDoc.cidSize = commitmentRet.size;
         newDoc.timeCreated = block.timestamp;
 
         docsForApproval[docsForApprovalCount.current()] = newDoc;
